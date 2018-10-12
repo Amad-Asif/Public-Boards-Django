@@ -8,13 +8,26 @@ from django.contrib.auth import views as auth_views
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     #Homepage
-    url(r'^$', views.home, name='home'),
+    #Homepage view for Function based view
+    #url(r'^$', views.home, name='home'),
+    #Homepage Generic Class Based View
+    url(r'^$', views.BoardListView.as_view(), name='home'),
+
     #Boards URLs
-    url(r'^boards/(?P<pk>\d+)/$', views.board_topics, name='board_topics'),
+    #Board Topics using Function based View Url
+    #url(r'^boards/(?P<pk>\d+)/$', views.board_topics, name='board_topics'),
+
+    #Board Topics using CLass based View Url
+    url(r'^boards/(?P<pk>\d+)/$', views.TopicListView.as_view(), name='board_topics'),
+    
+
     url(r'^boards/(?P<pk>\d+)/new/$', views.new_topic, name='new_topic'),
 
     #Board Messages URL
-    url(r'^boards/(?P<pk>\d+)/topics/(?P<topic_pk>\d+)/$', views.topic_posts, name='topic_posts'),
+    # Function based view
+    #url(r'^boards/(?P<pk>\d+)/topics/(?P<topic_pk>\d+)/$', views.topic_posts, name='topic_posts'),
+    #Class based View
+    url(r'^boards/(?P<pk>\d+)/topics/(?P<topic_pk>\d+)/$', views.PostListView.as_view(), name='topic_posts'),
 
     #Login URLs
     url(r'signup/$',accounts_views.signup, name='signup'),
@@ -51,5 +64,12 @@ urlpatterns = [
     #Reply to Post URLs
     url(r'^boards/(?P<pk>\d+)/topics/(?P<topic_pk>\d+)/reply/$', views.reply_topic, name='reply_topic'),
 
+    #### Class Based Views URLs ####
+    # url(r'^new_post/$', views.NewPostView.as_view(), name='new_post'),
+    url(r'^index/$', views.ContactList.as_view()),
+    #### Generic Class Based Views URLs ####
 
+    #Post Update URL
+    url(r'^boards/(?P<pk>\d+)/topics/(?P<topic_pk>\d+)/posts/(?P<post_pk>\d+)/edit/$',
+        views.PostUpdateView.as_view(), name='edit_post'),
 ]
