@@ -13,6 +13,7 @@ from django.utils import timezone
 
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
+from django.urls import reverse_lazy
 
 '''
 Django view: it’s just a function that receives 
@@ -219,4 +220,5 @@ class PostUpdateView(UpdateView):
         post.updated_at = timezone.now()
         post.save()
         return redirect('topic_posts', pk=post.topic.board.pk, topic_pk=post.topic.pk)
+
 
