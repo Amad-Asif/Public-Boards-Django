@@ -16,6 +16,11 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.urls import reverse_lazy
 
 '''
+A very easy way to add user profile pictures is by using Gravatar.
+
+'''
+
+'''
 Django view: it’s just a function that receives 
 an HttpRequest object and returns an HttpResponse.
 '''
@@ -144,6 +149,12 @@ def topic_posts(request, pk, topic_pk):
 
 """
 
+"""
+we want to do is try to control the view counting system a little bit more. 
+We don’t want to the same user refreshing the page counting as multiple views. 
+For this we can use sessions
+"""
+
 class PostListView(ListView):
     model = Post
     context_object_name = 'posts'
@@ -151,8 +162,13 @@ class PostListView(ListView):
     paginate_by = 2
 
     def get_context_data(self, **kwargs):
-        self.topic.views += 1
-        self.topic.save()
+        # Create a sesson key to ensure view count is incremented only when 
+        # a different user logs in
+        session_key = 'viewed_topic_{}'.format(self.topic.pk)
+        if not self.request.session.get(session_key, False):  
+            self.topic.views += 1
+            self.topic.save()
+            self.request.session[session_key] = True
         kwargs['topic'] = self.topic
         return super(PostListView,self).get_context_data(**kwargs)
     def get_queryset(self):
@@ -170,6 +186,9 @@ def reply_topic(request, pk, topic_pk):
             post.topic = topic
             post.created_by = request.user
             post.save()
+            #Update the last_saved
+            topic.last_updated = timezone.now()
+            topic.save()
             return redirect('topic_posts', pk=pk, topic_pk=topic_pk)
     else:
         form = PostForm()
